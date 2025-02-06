@@ -1,4 +1,4 @@
-// function to get all books from the API
+
 async function getGames() {
     try {
         const response = await axios.get('http://127.0.0.1:5000/games');
@@ -20,7 +20,6 @@ async function getGames() {
     }
 }
 
-// function to add a new game to the database
 async function addGame() {
     const title = document.getElementById('game-title').value;
     const genre = document.getElementById('game-genre').value;
