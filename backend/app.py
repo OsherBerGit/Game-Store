@@ -13,7 +13,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 # Specifies the database connection URL. In this case, it's creating a SQLite database
 # named 'gamestore.db' in your project directory. The three slashes '///' indicate a
 # relative path from the current directory
-app.config['SQLALCHEMY_DATABASE'] = 'sqlite:///gamestore.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gamestore.db'
 db.init_app(app)  # initializes the databsewith the flask application
 
 # this is a decorator from the flask module to define a route for for adding a game, supporting POST requests.(check the decorator summary i sent you and also the exercises)
@@ -24,7 +24,7 @@ def add_game():
         title=data['title'],
         genre=data['genre'],
         price=data['price'],
-        # is_loan=data['is_loan']
+        is_loan=data['is_loan']
     )
     db.session.add(new_game)  # add the bew game to the database session
     db.session.commit()  # commit the session to save in the database

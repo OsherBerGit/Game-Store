@@ -9,4 +9,4 @@ class Game(db.Model):
     # img_url = db.Column(db.String(200))
     price = db.Column(db.Float, nullable=False)
     # quantity = db.Column(db.Integer, nullable=False)
-    is_loan = db.Column(db.Boolean, nullable=False, defualt = False)
+    is_loan = db.Column(db.Boolean, nullable=False) # , default = False

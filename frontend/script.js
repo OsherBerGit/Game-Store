@@ -1,7 +1,7 @@
 // function to get all books from the API
 async function getGames() {
     try {
-        const response = await axios.get('http://127.0.0.1:5500/games');
+        const response = await axios.get('http://127.0.0.1:5000/games');
         const gamesList = document.getElementById('games-list');
         gamesList.innerHTML = ''; // Clear existing list
 
@@ -23,11 +23,8 @@ async function getGames() {
 // function to add a new game to the database
 async function addGame() {
     const title = document.getElementById('game-title').value;
-    alert(title);
     const genre = document.getElementById('game-genre').value;
-    alert(genre);
     const price = document.getElementById('game-price').value;
-    alert(price);
 
     if(!title || !genre || !price) {
         alert("Please fill of of the necessery fields.");
@@ -35,10 +32,11 @@ async function addGame() {
     }
 
     try {
-        await axios.post('http://127.0.0.1:5500/games', {
+        await axios.post('http://127.0.0.1:5000/games', {
             title: title,
             genre: genre,
-            price: price
+            price: price,
+            is_loan: false
         });
         
         // Clear form fields
