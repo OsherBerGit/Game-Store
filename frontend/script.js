@@ -1,29 +1,7 @@
 // function to get all books from the API
-// async function getBooks() {
-//     try {
-//         const response = await axios.get('http://127.0.0.1:5000/books');
-//         const booksList = document.getElementById('books-list');
-//         booksList.innerHTML = ''; // Clear existing list
-
-//         response.data.books.forEach(book => {
-//             booksList.innerHTML += `
-//                 <div class="book-card">
-//                     <h3>${book.title}</h3>
-//                     <p>Author: ${book.author}</p>
-//                     <p>Year: ${book.year_published}</p>
-//                     <p>Type: ${book.types}</p>
-//                 </div>
-//             `;
-//         });
-//     } catch (error) {
-//         console.error('Error fetching books:', error);
-//         alert('Failed to load books');
-//     }
-// }
-
 async function getGames() {
     try {
-        const response = await axios.get('http://127.0.0.1:5000/games');
+        const response = await axios.get('http://127.0.0.1:5500/games');
         const gamesList = document.getElementById('games-list');
         gamesList.innerHTML = ''; // Clear existing list
 
@@ -42,48 +20,25 @@ async function getGames() {
     }
 }
 
-// function to add a new book to the database
-// async function addBook() {
-//     const title = document.getElementById('book-title').value;
-//     const author = document.getElementById('book-author').value;
-//     const year_published = document.getElementById('book-year-published').value;
-//     const types = document.getElementById('book-type').value;
-
-//     try {
-//         await axios.post('http://127.0.0.1:5000/books', {
-//             title: title,
-//             author: author,
-//             year_published: year_published,
-//             types: types
-//         });
-        
-//         // Clear form fields
-//         document.getElementById('book-title').value = '';
-//         document.getElementById('book-author').value = '';
-//         document.getElementById('book-year-published').value = '';
-//         document.getElementById('book-type').value = '';
-
-//         // Refresh the books list
-//         getBooks();
-        
-//         alert('Book added successfully!');
-//     } catch (error) {
-//         console.error('Error adding book:', error);
-//         alert('Failed to add book');
-//     }
-// }
-
+// function to add a new game to the database
 async function addGame() {
     const title = document.getElementById('game-title').value;
+    alert(title);
     const genre = document.getElementById('game-genre').value;
+    alert(genre);
     const price = document.getElementById('game-price').value;
+    alert(price);
+
+    if(!title || !genre || !price) {
+        alert("Please fill of of the necessery fields.");
+        return;
+    }
 
     try {
-        await axios.post('http://127.0.0.1:5000/games', {
+        await axios.post('http://127.0.0.1:5500/games', {
             title: title,
             genre: genre,
-            price: price,
-            is_loan_status: false
+            price: price
         });
         
         // Clear form fields
@@ -101,5 +56,5 @@ async function addGame() {
     }
 }
 
-// Load all books when page loads
-document.addEventListener('DOMContentLoaded', getBooks);
+// Load all games when page loads
+document.addEventListener('DOMContentLoaded', getGames());
