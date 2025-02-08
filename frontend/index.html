@@ -4,8 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Game Store Management System</title>
-    <link rel="stylesheet" href="static/css/styles.css" />
-    
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="container">
@@ -15,7 +14,7 @@
           <input type="text" id="username" placeholder="Username" />
           <input type="password" id="password" placeholder="Password" />
           <button onclick="login()">Login</button>
-          <button onclick="register()">Register</button>
+          <!-- <button onclick="register()">Register</button> -->
         </div>
       </div>
 
@@ -34,9 +33,14 @@
             <button onclick="addCustomer()">Add Customer</button>
           </div>
 
+          <h2>Remove a Customer</h2>
+          <div class="form-group">
+            <input type="text" id="Customer-id-remove" placeholder="Customer ID" />
+            <button onclick="removeCustomer()">Remove Customer</button>
+          </div>
+
           <h2>All Customers</h2>
           <div id="customers-list" class="customers-grid"></div>
-
         </div>
 
         <div class="games-section">
@@ -48,11 +52,32 @@
             <button onclick="addGame()">Add Game</button>
           </div>
 
+          <h2>Remove a Game</h2>
+          <div class="form-group">
+            <input type="text" id="game-id-remove" placeholder="Game ID" />
+            <button onclick="removeGame()">Remove Game</button>
+          </div>
+
           <h2>All Games</h2>
           <div id="games-list" class="games-grid"></div>
+        </div>
+
+        <div class="loans-section">
+          <h2>Loan a Game</h2>
+          <div class="form-group">
+            <input type="text" id="game-id-loan" placeholder="Game ID" />
+            <input type="text" id="customer-id" placeholder="Customer ID" />
+            <button onclick="addLoan()">Loan Game</button>
+          </div>
+
+          <h2>Remove a Loan</h2>
+          <div class="form-group">
+            <input type="text" id="loan-id" placeholder="Loan ID" />
+            <button onclick="removeLoan()">Remove Loan</button>
+          </div>
 
           <h2>Loaned Games</h2>
-          <div id="loaned-games-list" class="games-grid"></div>
+          <div id="loans-list" class="games-grid"></div>
         </div>
       </div>
     </div>

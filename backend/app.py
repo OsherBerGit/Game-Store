@@ -26,10 +26,9 @@ def add_game():
         price=data['price'],
         is_loan=data['is_loan']
     )
-    db.session.add(new_game)  # add the bew game to the database session
+    db.session.add(new_game)  # add the new game to the database session
     db.session.commit()  # commit the session to save in the database
     return jsonify({'message': 'Game added to database.'}), 201
-
 
 # a decorator to Define a new route that handles GET requests
 @app.route('/games', methods=['GET'])
@@ -60,13 +59,105 @@ def get_games():
         return jsonify({
             'error': 'Failed to retrieve games',
             'message': str(e)
-        }), 500                                    #
+        }), 500
+        
+@app.route('/games', methods=['DELETE'])
+def delete_game():
+    data = request.json  # this is parsing the JSON data from the request body            
+    
+    game = Game.query.get(int(data['id'])) # find the game with the id
+    
+    db.session.delete(game)  # delete the game to the database session
+    db.session.commit()  # commit the session to save in the database
+    return jsonify({'message': 'Game removed from database.'}), 201
 
+@app.route('/customers', methods=['POST'])
+def add_customer():
+    data = request.json  # this is parsing the JSON data from the request body
+    new_customer = Customer(
+        name=data['name'],
+        email=data['email'],
+        phone_number=data['phone_number']
+    )
+    db.session.add(new_customer)  # add the new customer to the database session
+    db.session.commit()  # commit the session to save in the database
+    return jsonify({'message': 'Customer added to database.'}), 201
+
+@app.route('/customers', methods=['GET'])
+def get_customers():
+    try:
+        customers = Customer.query.all() # Get all the customers from the database
+
+        # Create empty list to store formatted customer data we get from the database
+        customers_list = []
+
+        for customer in customers:                         # Loop through each customer from database
+            customer_data = {                          # Create a dictionary for each customer
+                'id': customer.id,
+                'name': customer.name,
+                'email': customer.email,
+                'phone_number': customer.phone_number
+            }
+            # Add the iterated customer dictionary to our list
+            customers_list.append(customer_data)
+
+        return jsonify({                           # Return JSON response
+            'message': 'Customers retrieved successfully',
+            'customers': customers_list
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'error': 'Failed to retrieve customers',
+            'message': str(e)
+        }), 500
+        
+@app.route('/loans', methods=['POST'])
+def add_loan():
+    data = request.json  # this is parsing the JSON data from the request body
+    new_loan = Loan(
+        customer_id=data['customer_id'],
+        game_id=data['game_id']
+    )
+    db.session.add(new_loan)  # add the new loan to the database session
+    db.session.commit()  # commit the session to save in the database
+    return jsonify({'message': 'Loan added to database.'}), 201
+
+# a decorator to Define a new route that handles GET requests
+@app.route('/loans', methods=['GET'])
+def get_loans():
+    try:
+        loans = Loan.query.all() # Get all the games from the database
+
+        # Create empty list to store formatted game data we get from the database
+        loans_list = []
+
+        for loan in loans:                         # Loop through each game from database
+            loan_data = {                          # Create a dictionary for each game
+                'id': loan.id,
+                'customer_id': loan.customer_id,
+                'game_id': loan.game_id,
+                'loan_date': loan.loan_date
+            }
+            # Add the iterated loan dictionary to our list
+            loans_list.append(loan_data)
+
+        return jsonify({                           # Return JSON response
+            'message': 'Loans retrieved successfully',
+            'loans': loans_list
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'error': 'Failed to retrieve loans',
+            'message': str(e)
+        }), 500
+        
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Create all database tables defined in your models(check the models folder)
-
+        
     # with app.test_client() as test:
     #     response = test.post('/books', json={  # Make a POST request to /books endpoint with book  data
     #         'title': 'Harry Potter',
