@@ -26,7 +26,6 @@ async function getCustomers() {
         const response = await axios.get('http://127.0.0.1:5000/customers');
         const customersList = document.getElementById('customers-list');
         customersList.innerHTML = ''; // Clear existing list
-
         response.data.customers.forEach(customer => {
             customersList.innerHTML += `
                 <div class="customer-card">
@@ -75,14 +74,16 @@ async function addCustomer() {
     }
 }
 
-async function removeLoan() {
-    const id = document.getElementById('game-id-remove').value;
+async function removeCustomer() {
+    const id = document.getElementById('customer-id-remove').value;
+    loan_id = -1;
     isExist = false;
     
     if(!id) {
-        alert("Please fill the loan id field.");
+        alert("Please fill the game id field.");
         return;
     }
+
     try {
         const response = await axios.get('http://127.0.0.1:5000/customers');
         response.data.customers.forEach(customer => {
@@ -95,21 +96,33 @@ async function removeLoan() {
         alert('Failed to load customers');
     }
 
+    try {
+        const response = await axios.get('http://127.0.0.1:5000/loans');
+        response.data.loans.forEach(loan => {
+            if (loan.customer_id == id) {
+                loan_id = loan.id;
+            }
+        });
+    } catch (error) {
+        console.error('Error checking loans:', error);
+        alert('Failed to load loans');
+    }
+
     if(!isExist) {
-        alert("Customer has not found.");
+        alert("Game has not found.");
         return;
     }
 
     try {
-        await axios.delete('http://127.0.0.1:5000/customers', {
-            id: id
-        });
+        await axios.delete(`http://127.0.0.1:5000/customers/${id}`);
+        if (loan_id != -1)
+            await axios.delete(`http://127.0.0.1:5000/loans/${loan_id}`);
         
         // Clear form fields
-        document.getElementById('game-id-remove').value = '';
+        document.getElementById('customer-id-remove').value = '';
 
         // Refresh the books list
-        getCustomers();
+        getCustomer();
         
         alert('Customer removed successfully!');
     } catch (error) {
@@ -175,6 +188,7 @@ async function addGame() {
 
 async function removeGame() {
     const id = document.getElementById('game-id-remove').value;
+    loan_id = -1;
     isExist = false;
     
     if(!id) {
@@ -194,15 +208,27 @@ async function removeGame() {
         alert('Failed to load games');
     }
 
+    try {
+        const response = await axios.get('http://127.0.0.1:5000/loans');
+        response.data.loans.forEach(loan => {
+            if (loan.game_id == id) {
+                loan_id = loan.id;
+            }
+        });
+    } catch (error) {
+        console.error('Error checking loans:', error);
+        alert('Failed to load loans');
+    }
+
     if(!isExist) {
         alert("Game has not found.");
         return;
     }
 
     try {
-        await axios.delete('http://127.0.0.1:5000/games', {
-            id: id
-        });
+        await axios.delete(`http://127.0.0.1:5000/games/${id}`);
+        if (loan_id != -1)
+            await axios.delete(`http://127.0.0.1:5000/loans/${loan_id}`);
         
         // Clear form fields
         document.getElementById('game-id-remove').value = '';
@@ -299,9 +325,10 @@ async function removeLoan() {
     isExist = false;
     
     if(!id) {
-        alert("Please fill the loan id field.");
+        alert("Please fill the game id field.");
         return;
     }
+
     try {
         const response = await axios.get('http://127.0.0.1:5000/loans');
         response.data.loans.forEach(loan => {
@@ -315,14 +342,12 @@ async function removeLoan() {
     }
 
     if(!isExist) {
-        alert("Loan has not found.");
+        alert("Game has not found.");
         return;
     }
 
     try {
-        await axios.delete('http://127.0.0.1:5000/loans', {
-            id: id
-        });
+        await axios.delete(`http://127.0.0.1:5000/loans/${id}`);
         
         // Clear form fields
         document.getElementById('loan-id').value = '';

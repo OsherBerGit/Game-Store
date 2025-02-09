@@ -61,15 +61,15 @@ def get_games():
             'message': str(e)
         }), 500
         
-@app.route('/games', methods=['DELETE'])
-def delete_game():
-    data = request.json  # this is parsing the JSON data from the request body            
+@app.route('/games/<int:id>', methods=['DELETE'])
+def delete_game(id):
+    game = Game.query.get(id)
     
-    game = Game.query.get(int(data['id'])) # find the game with the id
+    if not game:
+        return
     
-    db.session.delete(game)  # delete the game to the database session
-    db.session.commit()  # commit the session to save in the database
-    return jsonify({'message': 'Game removed from database.'}), 201
+    db.session.delete(game)  # Delete the game from the database session
+    db.session.commit()  # Commit the session to save changes in the database
 
 @app.route('/customers', methods=['POST'])
 def add_customer():
@@ -112,6 +112,16 @@ def get_customers():
             'message': str(e)
         }), 500
         
+@app.route('/customers/<int:id>', methods=['DELETE'])
+def delete_customer(id):
+    customer = Customer.query.get(id)
+    
+    if not customer:
+        return
+    
+    db.session.delete(customer)  # Delete the game from the database session
+    db.session.commit()  # Commit the session to save changes in the database
+        
 @app.route('/loans', methods=['POST'])
 def add_loan():
     data = request.json  # this is parsing the JSON data from the request body
@@ -152,6 +162,16 @@ def get_loans():
             'error': 'Failed to retrieve loans',
             'message': str(e)
         }), 500
+        
+@app.route('/loans/<int:id>', methods=['DELETE'])
+def delete_loan(id):
+    loan = Loan.query.get(id)
+    
+    if not loan:
+        return
+    
+    db.session.delete(loan)  # Delete the game from the database session
+    db.session.commit()  # Commit the session to save changes in the database
         
 
 if __name__ == '__main__':
