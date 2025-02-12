@@ -1,34 +1,79 @@
 
+function setLoggedIn() {
+    localStorage.setItem('isLoggedIn', 'true');
+    document.getElementById('auth-section').classList.add('hidden');
+    document.getElementById('main-section').classList.remove('hidden');
+}
+
+function setLoggedOut() {
+    localStorage.removeItem('isLoggedIn');
+    document.getElementById('auth-section').classList.remove('hidden');
+    document.getElementById('main-section').classList.add('hidden');
+}
+
+// Modify the login function
 async function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-
-    if (username == 'admin' && password == 1234) {
-        alert("Login successful!");
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
-        document.getElementById('auth-section').classList.add('hidden');
-        document.getElementById('main-section').classList.remove('hidden');
+    try {
+        const response = await axios.get('http://127.0.0.1:5000/users');
+        const user = response.data.users.find(user => 
+            user.username === username && user.password === password
+        );
+        if (user) {
+            alert("Login successful!");
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            setLoggedIn(); // Use the new function
+        } else {
+            alert("Invalid username or password.");
+        }
     }
-    else {
-        alert("Invalid username or password.");
+    catch (error) {
+        console.error('Error fetching users:', error);
+        alert('Failed to load users');
     }
 }
 
+// Modify the logout function
 async function logout() {
     alert("Logging out!");
-    document.getElementById('auth-section').classList.remove('hidden');
-    document.getElementById('main-section').classList.add('hidden');
+    setLoggedOut(); // Use the new function
+}
+
+async function register() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    if(!username || !password) {
+        alert("Please fill the necessery fields.");
+        return;
+    }
+
+    try {
+        await axios.post('http://127.0.0.1:5000/users', {
+            username: username,
+            password: password
+        });
+        
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        
+        alert('Registration added successfully!');
+    } catch (error) {
+        console.error('Error registering:', error);
+        alert('Failed to register');
+    }
 }
 
 async function getCustomers() {
     try {
         const response = await axios.get('http://127.0.0.1:5000/customers');
         const customersList = document.getElementById('customers-list');
-        customersList.innerHTML = ''; // Clear existing list
+        customersList.innerHTML = '';
         response.data.customers.forEach(customer => {
             customersList.innerHTML += `
-                <div class="customer-card">
+                <div class="grid-item">
                     <h3>${customer.name}</h3>
                     <p>ID: ${customer.id}</p>
                     <p>Email: ${customer.email}</p>
@@ -48,7 +93,7 @@ async function addCustomer() {
     const phone_number = document.getElementById('customer-phone_number').value;
 
     if(!name || !email || !phone_number) {
-        alert("Please fill of of the necessery fields.");
+        alert("Please fill the necessery fields.");
         return;
     }
 
@@ -59,12 +104,10 @@ async function addCustomer() {
             phone_number: phone_number
         });
         
-        // Clear form fields
         document.getElementById('customer-name').value = '';
         document.getElementById('customer-email').value = '';
         document.getElementById('customer-phone_number').value = '';
 
-        // Refresh the books list
         getCustomers();
         
         alert('Customer added successfully!');
@@ -114,20 +157,26 @@ async function removeCustomer() {
     }
 
     try {
-        await axios.delete(`http://127.0.0.1:5000/customers/${id}`);
-        if (loan_id != -1)
+        if (loan_id != -1) {
             await axios.delete(`http://127.0.0.1:5000/loans/${loan_id}`);
-        
-        // Clear form fields
+            getLoans();
+        }
+    } catch (error) {
+        console.error('Error removing Loan:', error);
+        alert('Failed to remove Loan');
+    }
+
+    try {
+        await axios.delete(`http://127.0.0.1:5000/customers/${id}`);
+       
         document.getElementById('customer-id-remove').value = '';
 
-        // Refresh the books list
-        getCustomer();
+        getCustomers();
         
         alert('Customer removed successfully!');
     } catch (error) {
         console.error('Error removing Customer:', error);
-        alert('Failed to remove Customer');
+        // alert('Failed to remove Customer');
     }
 }
 
@@ -139,7 +188,7 @@ async function getGames() {
 
         response.data.games.forEach(game => {
             gamesList.innerHTML += `
-                <div class="game-card">
+                <div class="grid-item">
                     <h3>${game.title}</h3>
                     <p>ID: ${game.id}</p>
                     <p>Genre: ${game.genre}</p>
@@ -159,7 +208,7 @@ async function addGame() {
     const price = document.getElementById('game-price').value;
 
     if(!title || !genre || !price) {
-        alert("Please fill of of the necessery fields.");
+        alert("Please fill the necessery fields.");
         return;
     }
 
@@ -226,20 +275,25 @@ async function removeGame() {
     }
 
     try {
-        await axios.delete(`http://127.0.0.1:5000/games/${id}`);
-        if (loan_id != -1)
+        if (loan_id != -1) {
             await axios.delete(`http://127.0.0.1:5000/loans/${loan_id}`);
-        
-        // Clear form fields
-        document.getElementById('game-id-remove').value = '';
+            getLoans();
+        }
+    } catch (error) {
+        console.error('Error removing Loan:', error);
+        alert('Failed to remove Loan');
+    }
 
-        // Refresh the books list
+    try {
+        await axios.delete(`http://127.0.0.1:5000/games/${id}`);
+        
+        document.getElementById('game-id-remove').value = '';
         getGames();
         
         alert('Game removed successfully!');
     } catch (error) {
         console.error('Error removing Game:', error);
-        alert('Failed to remove Game');
+        // alert('Failed to remove Game');
     }
 }
 
@@ -251,7 +305,7 @@ async function getLoans() {
 
         response.data.loans.forEach(loan => {
             loansList.innerHTML += `
-                <div class="loan-card">
+                <div class="grid-item">
                     <h3>${loan.id}</h3>
                     <p>Game: ${loan.game_id}</p>
                     <p>Customer: ${loan.customer_id}</p>
@@ -306,11 +360,9 @@ async function addLoan() {
             game_id: game
         });
         
-        // Clear form fields
         document.getElementById('game-id-loan').value = '';
         document.getElementById('customer-id').value = '';
 
-        // Refresh the books list
         getLoans();
         
         alert('Loan added successfully!');
@@ -348,21 +400,16 @@ async function removeLoan() {
 
     try {
         await axios.delete(`http://127.0.0.1:5000/loans/${id}`);
-        
-        // Clear form fields
-        document.getElementById('loan-id').value = '';
 
-        // Refresh the books list
+        document.getElementById('loan-id').value = '';
         getLoans();
-        
+
         alert('Loan removed successfully!');
     } catch (error) {
         console.error('Error removing Loan:', error);
-        alert('Failed to remove Loan');
+        // alert('Failed to remove Loan');
     }
 }
-
-// Load all games when page loads
 
 async function getAll() {
     try {
@@ -375,4 +422,10 @@ async function getAll() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', getAll());
+document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('main-section').classList.remove('hidden');
+    }
+    getAll();
+});

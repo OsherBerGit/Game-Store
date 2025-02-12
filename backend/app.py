@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime, timedelta
 from models import db
+from models.admin import User
 from models.customer import Customer
 from models.game import Game
 from models.loans import Loan
@@ -70,38 +71,73 @@ def delete_game(id):
     
     db.session.delete(game)  # Delete the game from the database session
     db.session.commit()  # Commit the session to save changes in the database
+    
+@app.route('/users', methods=['POST'])
+def add_user():
+    data = request.json
+    new_user = User(
+        username=data['username'],
+        password=data['password']
+    )
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message': 'User added to database.'}), 201
+
+@app.route('/users', methods=['GET'])
+def get_users():
+    try:
+        users = User.query.all()
+        
+        users_list = []
+
+        for user in users:
+            user_data = {
+                'id': user.id,
+                'username': user.username,
+                'password': user.password
+            }
+            users_list.append(user_data)
+
+        return jsonify({
+            'message': 'Users retrieved successfully',
+            'users': users_list
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'error': 'Failed to retrieve games',
+            'message': str(e)
+        }), 500
 
 @app.route('/customers', methods=['POST'])
 def add_customer():
-    data = request.json  # this is parsing the JSON data from the request body
+    data = request.json
     new_customer = Customer(
         name=data['name'],
         email=data['email'],
         phone_number=data['phone_number']
     )
-    db.session.add(new_customer)  # add the new customer to the database session
-    db.session.commit()  # commit the session to save in the database
+    db.session.add(new_customer)
+    db.session.commit()
     return jsonify({'message': 'Customer added to database.'}), 201
 
 @app.route('/customers', methods=['GET'])
 def get_customers():
     try:
-        customers = Customer.query.all() # Get all the customers from the database
+        customers = Customer.query.all()
 
-        # Create empty list to store formatted customer data we get from the database
         customers_list = []
 
-        for customer in customers:                         # Loop through each customer from database
-            customer_data = {                          # Create a dictionary for each customer
+        for customer in customers:
+            customer_data = {
                 'id': customer.id,
                 'name': customer.name,
                 'email': customer.email,
                 'phone_number': customer.phone_number
             }
-            # Add the iterated customer dictionary to our list
             customers_list.append(customer_data)
 
-        return jsonify({                           # Return JSON response
+        return jsonify({
             'message': 'Customers retrieved successfully',
             'customers': customers_list
         }), 200
@@ -115,44 +151,39 @@ def get_customers():
 @app.route('/customers/<int:id>', methods=['DELETE'])
 def delete_customer(id):
     customer = Customer.query.get(id)
-    
     if not customer:
         return
-    
-    db.session.delete(customer)  # Delete the game from the database session
-    db.session.commit()  # Commit the session to save changes in the database
+    db.session.delete(customer)
+    db.session.commit()
         
 @app.route('/loans', methods=['POST'])
 def add_loan():
-    data = request.json  # this is parsing the JSON data from the request body
+    data = request.json
     new_loan = Loan(
         customer_id=data['customer_id'],
         game_id=data['game_id']
     )
-    db.session.add(new_loan)  # add the new loan to the database session
-    db.session.commit()  # commit the session to save in the database
+    db.session.add(new_loan)
+    db.session.commit()
     return jsonify({'message': 'Loan added to database.'}), 201
 
-# a decorator to Define a new route that handles GET requests
 @app.route('/loans', methods=['GET'])
 def get_loans():
     try:
-        loans = Loan.query.all() # Get all the games from the database
+        loans = Loan.query.all()
 
-        # Create empty list to store formatted game data we get from the database
         loans_list = []
 
-        for loan in loans:                         # Loop through each game from database
-            loan_data = {                          # Create a dictionary for each game
+        for loan in loans:
+            loan_data = {
                 'id': loan.id,
                 'customer_id': loan.customer_id,
                 'game_id': loan.game_id,
                 'loan_date': loan.loan_date
             }
-            # Add the iterated loan dictionary to our list
             loans_list.append(loan_data)
 
-        return jsonify({                           # Return JSON response
+        return jsonify({
             'message': 'Loans retrieved successfully',
             'loans': loans_list
         }), 200
@@ -166,13 +197,10 @@ def get_loans():
 @app.route('/loans/<int:id>', methods=['DELETE'])
 def delete_loan(id):
     loan = Loan.query.get(id)
-    
     if not loan:
         return
-    
-    db.session.delete(loan)  # Delete the game from the database session
-    db.session.commit()  # Commit the session to save changes in the database
-        
+    db.session.delete(loan)
+    db.session.commit()
 
 if __name__ == '__main__':
     with app.app_context():
