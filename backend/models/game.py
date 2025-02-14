@@ -4,9 +4,8 @@ from . import db
 
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
     genre = db.Column(db.String(200), nullable=False)
-    # img_url = db.Column(db.String(200))
     price = db.Column(db.Float, nullable=False)
     # quantity = db.Column(db.Integer, nullable=False)
-    is_loan = db.Column(db.Boolean, nullable=False) # , default = False
+    # img_url = db.Column(db.String(200))

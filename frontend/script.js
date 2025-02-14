@@ -189,10 +189,10 @@ async function getGames() {
         response.data.games.forEach(game => {
             gamesList.innerHTML += `
                 <div class="grid-item">
-                    <h3>${game.title}</h3>
-                    <p>ID: ${game.id}</p>
+                    <h3>${game.name}</h3>
                     <p>Genre: ${game.genre}</p>
-                    <p>Price: ${game.price}</p>
+                    <p>Price: ${game.price}$</p>
+                    <button onclick="removeGame(${game.id})" id="delgame-btn">Remove Game</button>
                 </div>
             `;
         });
@@ -203,25 +203,24 @@ async function getGames() {
 }
 
 async function addGame() {
-    const title = document.getElementById('game-title').value;
+    const name = document.getElementById('game-name').value;
     const genre = document.getElementById('game-genre').value;
     const price = document.getElementById('game-price').value;
 
-    if(!title || !genre || !price) {
+    if(!name || !genre || !price) {
         alert("Please fill the necessery fields.");
         return;
     }
 
     try {
         await axios.post('http://127.0.0.1:5000/games', {
-            title: title,
+            name: name,
             genre: genre,
-            price: price,
-            is_loan: false
+            price: price
         });
-        
+
         // Clear form fields
-        document.getElementById('game-title').value = '';
+        document.getElementById('game-name').value = '';
         document.getElementById('game-genre').value = '';
         document.getElementById('game-price').value = '';
 
@@ -235,27 +234,8 @@ async function addGame() {
     }
 }
 
-async function removeGame() {
-    const id = document.getElementById('game-id-remove').value;
+async function removeGame(id) {
     loan_id = -1;
-    isExist = false;
-    
-    if(!id) {
-        alert("Please fill the game id field.");
-        return;
-    }
-
-    try {
-        const response = await axios.get('http://127.0.0.1:5000/games');
-        response.data.games.forEach(game => {
-            if (game.id == id) {
-                isExist = true;
-            }
-        });
-    } catch (error) {
-        console.error('Error checking games:', error);
-        alert('Failed to load games');
-    }
 
     try {
         const response = await axios.get('http://127.0.0.1:5000/loans');
@@ -267,11 +247,6 @@ async function removeGame() {
     } catch (error) {
         console.error('Error checking loans:', error);
         alert('Failed to load loans');
-    }
-
-    if(!isExist) {
-        alert("Game has not found.");
-        return;
     }
 
     try {
@@ -297,19 +272,91 @@ async function removeGame() {
     }
 }
 
+// async function removeGame() {
+//     const id = document.getElementById('game-id-remove').value;
+//     loan_id = -1;
+//     isExist = false;
+    
+//     if(!id) {
+//         alert("Please fill the game id field.");
+//         return;
+//     }
+
+//     try {
+//         const response = await axios.get('http://127.0.0.1:5000/games');
+//         response.data.games.forEach(game => {
+//             if (game.id == id) {
+//                 isExist = true;
+//             }
+//         });
+//     } catch (error) {
+//         console.error('Error checking games:', error);
+//         alert('Failed to load games');
+//     }
+
+//     try {
+//         const response = await axios.get('http://127.0.0.1:5000/loans');
+//         response.data.loans.forEach(loan => {
+//             if (loan.game_id == id) {
+//                 loan_id = loan.id;
+//             }
+//         });
+//     } catch (error) {
+//         console.error('Error checking loans:', error);
+//         alert('Failed to load loans');
+//     }
+
+//     if(!isExist) {
+//         alert("Game has not found.");
+//         return;
+//     }
+
+//     try {
+//         if (loan_id != -1) {
+//             await axios.delete(`http://127.0.0.1:5000/loans/${loan_id}`);
+//             getLoans();
+//         }
+//     } catch (error) {
+//         console.error('Error removing Loan:', error);
+//         alert('Failed to remove Loan');
+//     }
+
+//     try {
+//         await axios.delete(`http://127.0.0.1:5000/games/${id}`);
+        
+//         document.getElementById('game-id-remove').value = '';
+//         getGames();
+        
+//         alert('Game removed successfully!');
+//     } catch (error) {
+//         console.error('Error removing Game:', error);
+//         // alert('Failed to remove Game');
+//     }
+// }
+
 async function getLoans() {
     try {
         const response = await axios.get('http://127.0.0.1:5000/loans');
+        const games = await axios.get('http://127.0.0.1:5000/games');
         const loansList = document.getElementById('loans-list');
         loansList.innerHTML = ''; // Clear existing list
+        gName = "";
+        cName = "";
 
         response.data.loans.forEach(loan => {
+            games.data.loans.forEach(game => {
+                if (game.id == loan.id)
+                    gName = game.name;
+            });
+
+
             loansList.innerHTML += `
                 <div class="grid-item">
                     <h3>${loan.id}</h3>
-                    <p>Game: ${loan.game_id}</p>
+                    <p>Game: ${gName}</p>
                     <p>Customer: ${loan.customer_id}</p>
                     <p>Loan Date: ${loan.loan_date}</p>
+                    <button onclick="removeLoan(${loan.id})" id="delloan-btn">Remove Loan</button>
                 </div>
             `;
         });

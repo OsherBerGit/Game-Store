@@ -22,10 +22,9 @@ db.init_app(app)  # initializes the databsewith the flask application
 def add_game():
     data = request.json  # this is parsing the JSON data from the request body
     new_game = Game(
-        title=data['title'],
+        name=data['name'],
         genre=data['genre'],
-        price=data['price'],
-        is_loan=data['is_loan']
+        price=data['price']
     )
     db.session.add(new_game)  # add the new game to the database session
     db.session.commit()  # commit the session to save in the database
@@ -43,10 +42,9 @@ def get_games():
         for game in games:                         # Loop through each game from database
             game_data = {                          # Create a dictionary for each game
                 'id': game.id,
-                'title': game.title,
+                'name': game.name,
                 'genre': game.genre,
-                'price': game.price,
-                'is_loan': game.is_loan
+                'price': game.price
             }
             # Add the iterated game dictionary to our list
             games_list.append(game_data)
@@ -205,7 +203,7 @@ def delete_loan(id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Create all database tables defined in your models(check the models folder)
-        
+
     # with app.test_client() as test:
     #     response = test.post('/books', json={  # Make a POST request to /books endpoint with book  data
     #         'title': 'Harry Potter',
