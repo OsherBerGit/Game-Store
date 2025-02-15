@@ -75,9 +75,9 @@ async function getCustomers() {
             customersList.innerHTML += `
                 <div class="grid-item">
                     <h3>${customer.name}</h3>
-                    <p>ID: ${customer.id}</p>
                     <p>Email: ${customer.email}</p>
                     <p>Phone Number: ${customer.phone_number}</p>
+                    <button onclick="removeCustomer(${customer.id})" id="delcustomer-btn">Remove Customer</button>
                 </div>
             `;
         });
@@ -117,27 +117,71 @@ async function addCustomer() {
     }
 }
 
-async function removeCustomer() {
-    const id = document.getElementById('customer-id-remove').value;
-    loan_id = -1;
-    isExist = false;
+// async function removeCustomer() {
+//     const id = document.getElementById('customer-id-remove').value;
+//     loan_id = -1;
+//     isExist = false;
     
-    if(!id) {
-        alert("Please fill the game id field.");
-        return;
-    }
+//     if(!id) {
+//         alert("Please fill the game id field.");
+//         return;
+//     }
 
-    try {
-        const response = await axios.get('http://127.0.0.1:5000/customers');
-        response.data.customers.forEach(customer => {
-            if (customer.id == id) {
-                isExist = true;
-            }
-        });
-    } catch (error) {
-        console.error('Error checking customers:', error);
-        alert('Failed to load customers');
-    }
+//     try {
+//         const response = await axios.get('http://127.0.0.1:5000/customers');
+//         response.data.customers.forEach(customer => {
+//             if (customer.id == id) {
+//                 isExist = true;
+//             }
+//         });
+//     } catch (error) {
+//         console.error('Error checking customers:', error);
+//         alert('Failed to load customers');
+//     }
+
+//     try {
+//         const response = await axios.get('http://127.0.0.1:5000/loans');
+//         response.data.loans.forEach(loan => {
+//             if (loan.customer_id == id) {
+//                 loan_id = loan.id;
+//             }
+//         });
+//     } catch (error) {
+//         console.error('Error checking loans:', error);
+//         alert('Failed to load loans');
+//     }
+
+//     if(!isExist) {
+//         alert("Game has not found.");
+//         return;
+//     }
+
+//     try {
+//         if (loan_id != -1) {
+//             await axios.delete(`http://127.0.0.1:5000/loans/${loan_id}`);
+//             getLoans();
+//         }
+//     } catch (error) {
+//         console.error('Error removing Loan:', error);
+//         alert('Failed to remove Loan');
+//     }
+
+//     try {
+//         await axios.delete(`http://127.0.0.1:5000/customers/${id}`);
+       
+//         document.getElementById('customer-id-remove').value = '';
+
+//         getCustomers();
+        
+//         alert('Customer removed successfully!');
+//     } catch (error) {
+//         console.error('Error removing Customer:', error);
+//         // alert('Failed to remove Customer');
+//     }
+// }
+
+async function removeCustomer(id) {
+    loan_id = -1;
 
     try {
         const response = await axios.get('http://127.0.0.1:5000/loans');
@@ -149,11 +193,6 @@ async function removeCustomer() {
     } catch (error) {
         console.error('Error checking loans:', error);
         alert('Failed to load loans');
-    }
-
-    if(!isExist) {
-        alert("Game has not found.");
-        return;
     }
 
     try {
@@ -194,7 +233,7 @@ async function getGames() {
                     <p>Price: ${game.price}$</p>
                     <button onclick="removeGame(${game.id})" id="delgame-btn">Remove Game</button>
                 </div>
-            `;
+            `; // <button onclick="addLoan(${game.id})" id="addloan-btn">Loan Game</button>
         });
     } catch (error) {
         console.error('Error fetching games:', error);
@@ -338,23 +377,21 @@ async function getLoans() {
     try {
         const response = await axios.get('http://127.0.0.1:5000/loans');
         const games = await axios.get('http://127.0.0.1:5000/games');
+        const customers = await axios.get('http://127.0.0.1:5000/customers');
         const loansList = document.getElementById('loans-list');
         loansList.innerHTML = ''; // Clear existing list
         gName = "";
         cName = "";
 
         response.data.loans.forEach(loan => {
-            games.data.loans.forEach(game => {
-                if (game.id == loan.id)
-                    gName = game.name;
-            });
-
+            games.data.games.forEach(game => { if (game.id == loan.game_id) gName = game.name; });
+            customers.data.customers.forEach(customer => { if (customer.id == loan.customer_id) cName = customer.name; });
 
             loansList.innerHTML += `
                 <div class="grid-item">
                     <h3>${loan.id}</h3>
                     <p>Game: ${gName}</p>
-                    <p>Customer: ${loan.customer_id}</p>
+                    <p>Customer: ${cName}</p>
                     <p>Loan Date: ${loan.loan_date}</p>
                     <button onclick="removeLoan(${loan.id})" id="delloan-btn">Remove Loan</button>
                 </div>
@@ -419,32 +456,46 @@ async function addLoan() {
     }
 }
 
-async function removeLoan() {
-    const id = document.getElementById('loan-id').value;
-    isExist = false;
+// async function removeLoan() {
+//     const id = document.getElementById('loan-id').value;
+//     isExist = false;
     
-    if(!id) {
-        alert("Please fill the game id field.");
-        return;
-    }
+//     if(!id) {
+//         alert("Please fill the game id field.");
+//         return;
+//     }
 
-    try {
-        const response = await axios.get('http://127.0.0.1:5000/loans');
-        response.data.loans.forEach(loan => {
-            if (loan.id == id) {
-                isExist = true;
-            }
-        });
-    } catch (error) {
-        console.error('Error checking loans:', error);
-        alert('Failed to load loans');
-    }
+//     try {
+//         const response = await axios.get('http://127.0.0.1:5000/loans');
+//         response.data.loans.forEach(loan => {
+//             if (loan.id == id) {
+//                 isExist = true;
+//             }
+//         });
+//     } catch (error) {
+//         console.error('Error checking loans:', error);
+//         alert('Failed to load loans');
+//     }
 
-    if(!isExist) {
-        alert("Game has not found.");
-        return;
-    }
+//     if(!isExist) {
+//         alert("Game has not found.");
+//         return;
+//     }
 
+//     try {
+//         await axios.delete(`http://127.0.0.1:5000/loans/${id}`);
+
+//         document.getElementById('loan-id').value = '';
+//         getLoans();
+
+//         alert('Loan removed successfully!');
+//     } catch (error) {
+//         console.error('Error removing Loan:', error);
+//         // alert('Failed to remove Loan');
+//     }
+// }
+
+async function removeLoan(id) {
     try {
         await axios.delete(`http://127.0.0.1:5000/loans/${id}`);
 
