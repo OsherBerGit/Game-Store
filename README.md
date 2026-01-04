@@ -13,12 +13,5 @@ A full-stack e-commerce platform for digital games, built with Python Flask and 
 
 ## 🛠 Tech Stack
 
--   **Backend**:
-    -   [Python](https://www.python.org/)
-    -   [Flask](https://flask.palletsprojects.com/)
--   **Frontend**:
-    -   [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-    -   [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML)
-    -   [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS)
--   **Database**:
-    -   *(You can add your database here, e.g., PostgreSQL, SQLite, MongoDB)*
+-   **Backend**: Python Flask
+-   **Frontend**: Javascript, Html and css
