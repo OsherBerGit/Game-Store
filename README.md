@@ -13,5 +13,9 @@ A full-stack e-commerce platform for digital games, built with Python Flask and 
 
 ## 🛠 Tech Stack
 
--   **Backend**: Python Flask
--   **Frontend**: Javascript, Html and css
+- **Backend**: Python with Flask
+- **ORM**: SQLAlchemy (Core & ORM)
+- **Database**: SQLite
+- **Frontend**: Modern HTML, CSS, and Vanilla JavaScript
+- **Templating Engine**: Jinja2
+<!-- - **API Documentation**: Flasgger / Swagger UI -->
