@@ -1,4 +1,4 @@
-# 🎮 Flask Game Store
+# 🎮 Game Store
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
@@ -12,7 +12,7 @@
 -->
 
 ## 📖 About
-**Flask Game Store** is a fully functional e-commerce platform for digital video games. 
+**Game Store** is a fully functional e-commerce platform for digital video games. 
 
 Unlike modern Single Page Applications (SPAs), this project demonstrates a robust **Server-Side Rendering (SSR)** architecture using **Jinja2**. It features a dynamic frontend built with **Vanilla JavaScript** to handle cart interactions and filtering without heavy framework overhead.
 
